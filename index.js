@@ -16,6 +16,7 @@ app.use(cors());
 const PORT=3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
 const firebase = require("firebase");
+require("firebase/database");
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -30,7 +31,7 @@ app.post("/addPassword", (req, res) => {
   };
   db.push(details)
     .then(() => console.log("successfully inserted"))
-    .catch((err) => console.log(err.message));
+    .catch((err) => {console.log(err.message)});
   db.off();
 });
 
