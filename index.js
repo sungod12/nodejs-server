@@ -1,5 +1,3 @@
-
-
 const express = require("express");
 const cors=require("cors");
 const app = express();
@@ -7,13 +5,12 @@ app.use(express.json());
 app.use(cors());
 const PORT=3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
-const firebase = require("firebase");
-require("firebase/database");
+const {database} = require("./fire");
 
 
 
 app.post("/addPassword", (req, res) => {
-  const db = firebase.database().ref(`${req.body.id}`);
+  const db = database.ref(`${req.body.id}`);
   const { title, password } = req.body;
   const hashedPassword = encrypt(password);
   const details = {
@@ -28,7 +25,7 @@ app.post("/addPassword", (req, res) => {
 
 app.get("/showPasswords/:id",async(req,res)=>{
   id=req.params['id'];
-  const db = firebase.database().ref(`${id}`);
+  const db = database.ref(`${id}`);
   const data=await db.get();
   const value=data.val();
   const temp=[];
@@ -42,7 +39,7 @@ app.get("/showPasswords/:id",async(req,res)=>{
 
 app.post("/deletePassword/:id",(req,res)=>{
   id=req.params['id'];
-  const db = firebase.database().ref(`${id}/${req.body.id}`);
+  const db = database.ref(`${id}/${req.body.id}`);
   db.remove();
   db.off();
 })
