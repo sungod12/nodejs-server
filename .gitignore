@@ -1,5 +1,5 @@
 # dependencies
--f /node_modules
+ /node_modules
 
 # misc
 .env.local
