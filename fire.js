@@ -1,9 +1,9 @@
-const firebase=require("firebase");
+const firebase = require("firebase");
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  apiKey: "AIzaSyDt_atiF8KQwRTZHZJcuU35MRfMa1WiE5s",
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  databaseURL:"https://pass-manager142-default-rtdb.firebaseio.com",
+  databaseURL: "https://pass-manager142-default-rtdb.firebaseio.com",
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDERID,
@@ -11,6 +11,7 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const database=firebase.database();
+const database = firebase.database();
+const auth = firebase.auth();
 
-module.exports={firebase,database};
+module.exports = { database, auth };

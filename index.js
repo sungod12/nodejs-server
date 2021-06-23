@@ -5,10 +5,42 @@ app.use(express.json());
 app.use(cors());
 const PORT = 3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
-const { database } = require("./fire");
+const { database, auth } = require("./fire");
 
 app.get("/", (req, res) => {
   res.send("Welcome to server");
+});
+
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  auth
+    .createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      res.send("success");
+    })
+    .catch(() => {
+      res.send("Error!Account already Exists");
+    });
+});
+
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  auth
+    .signInWithEmailAndPassword(email, password)
+    .then((response) => res.send(response))
+    .catch((err) => res.send(err));
+});
+
+app.post("/resetPassword", (req, res) => {
+  const { email } = req.body;
+  auth
+    .sendPasswordResetEmail(email)
+    .then(() => res.send("Success"))
+    .catch((err) => res.send(err));
+});
+
+app.post("/logout", (req, res) => {
+  auth.signOut().then(() => res.send("Success"));
 });
 
 app.post("/addPassword", (req, res) => {
