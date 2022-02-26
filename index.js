@@ -7,6 +7,19 @@ const PORT = 3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
 const { database, auth } = require("./fire");
 
+const verify = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "https://passaver-app.netlify.app/"
+    );
+  });
+
+  next();
+};
+
 app.get("/", (req, res) => {
   res.send("Welcome to server");
 });
@@ -43,23 +56,25 @@ app.post("/logout", (req, res) => {
   auth.signOut().then(() => res.send("Success"));
 });
 
-app.post("/addPassword", (req, res) => {
+app.post("/addPassword", verify, (req, res) => {
   const db = database.ref(`${req.body.id}`);
   const { title, password } = req.body;
-  const hashedPassword = encrypt(password);
-  const details = {
-    title: title,
-    password: hashedPassword,
-  };
-  db.push(details)
-    .then(() => console.log("successfully inserted"))
-    .catch((err) => {
-      console.log(err.message);
-    });
-  db.off();
+  try {
+    const hashedPassword = encrypt(password);
+    const details = {
+      title: title,
+      password: hashedPassword,
+    };
+    db.push(details);
+    return "successfully inserted";
+  } catch (err) {
+    return "Some error occured" + err.message;
+  } finally {
+    db.off();
+  }
 });
 
-app.get("/showPasswords/:id", async (req, res) => {
+app.get("/showPasswords/:id", verify, async (req, res) => {
   id = req.params["id"];
   const db = database.ref(`${id}`);
   const data = await db.get();
