@@ -12,7 +12,7 @@ const verify = (req, res, next) => {
 };
 
 app.get("/", (req, res) => {
-  res.send("Welcome to server");
+  res.json("Welcome to server");
 });
 
 app.post("/register", (req, res) => {
@@ -20,10 +20,10 @@ app.post("/register", (req, res) => {
   auth
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
-      res.send("success");
+      res.json({ message: "success" });
     })
     .catch(() => {
-      res.send("Error!Account already Exists");
+      res.json({ error: "Error!Account already Exists" });
     });
 });
 
@@ -31,20 +31,20 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   auth
     .signInWithEmailAndPassword(email, password)
-    .then((response) => res.send(response))
-    .catch((err) => res.send(err));
+    .then((response) => res.json(response))
+    .catch((err) => res.json(err));
 });
 
 app.post("/resetPassword", (req, res) => {
   const { email } = req.body;
   auth
     .sendPasswordResetEmail(email)
-    .then(() => res.send("Success"))
-    .catch((err) => res.send(err));
+    .then(() => res.json({ message: "Success" }))
+    .catch((err) => res.json(err));
 });
 
 app.post("/logout", (req, res) => {
-  auth.signOut().then(() => res.send("Success"));
+  auth.signOut().then(() => res.json({ message: "Success" }));
 });
 
 app.post("/addPassword", verify, (req, res) => {
@@ -57,9 +57,9 @@ app.post("/addPassword", verify, (req, res) => {
       password: hashedPassword,
     };
     db.push(details);
-    res.send("successfully inserted");
+    res.json({ message: "successfully inserted" });
   } catch (err) {
-    res.send("Some error occured");
+    res.json({ message: "Some error occured" });
   } finally {
     db.off();
   }
@@ -70,17 +70,18 @@ app.get("/showPasswords/:id", verify, async (req, res) => {
   const db = database.ref(`${id}`);
   const data = await db.get();
   const value = data.val();
-  const temp = [];
+  const result = [];
   for (let id in value) {
-    temp.push({ id, ...value[id] });
+    result.push({ id, ...value[id] });
   }
+  res.json({ result });
   db.off();
-  res.send(temp);
 });
 
 app.post("/deletePassword/:id", (req, res) => {
   id = req.params["id"];
   const db = database.ref(`${id}/${req.body.id}`);
+  res.json({ message: "successfully deleted" });
   db.remove();
   db.off();
 });
