@@ -2,21 +2,25 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(express.json());
-app.use(cors());
 const PORT = 3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
 const { database, auth } = require("./fire");
-
+const whitelist = [
+  "https://passaver-app.netlify.app/",
+  "http://localhost:3000",
+];
+const corsOption = {
+  origin: (origin) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      return;
+    } else {
+      return "Not allowed";
+    }
+  },
+};
+app.use(cors(corsOption));
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      "https://passaver-app.netlify.app/"
-    );
-  });
-
   next();
 };
 
