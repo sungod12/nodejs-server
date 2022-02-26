@@ -5,20 +5,7 @@ app.use(express.json());
 const PORT = 3001;
 const { encrypt, decrypt } = require("./EncryptionHandler");
 const { database, auth } = require("./fire");
-const whitelist = [
-  "https://passaver-app.netlify.app/",
-  "http://localhost:3000",
-];
-const corsOption = {
-  origin: (origin) => {
-    if (whitelist.indexOf(origin) !== -1) {
-      return;
-    } else {
-      return "Not allowed";
-    }
-  },
-};
-app.use(cors(corsOption));
+app.use(cors());
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
   next();
@@ -70,9 +57,9 @@ app.post("/addPassword", verify, (req, res) => {
       password: hashedPassword,
     };
     db.push(details);
-    return "successfully inserted";
+    res.send("successfully inserted");
   } catch (err) {
-    return "Some error occured" + err.message;
+    res.send("Some error occured");
   } finally {
     db.off();
   }
